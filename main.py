@@ -6,11 +6,11 @@ import random
 import os
 
 # глобальные переменные
-N = int(1000) # количество частиц
+N = int(2000) # количество частиц
 Mass = int(1) # масса материи
 # m = float(Mass/N) # масса одной частицы
 Vmax = int(1)  # максимальная скорость частицы
-# d = float(0.01) # delta-окрестность
+d = float(0.01) # delta-окрестность
 dt = float(0.001) # тик
 Leng = int(10) # длина коробки
 
@@ -35,11 +35,11 @@ def rand_gen_char(pars):
   c = np.random.uniform(0, Leng, (1, 3))
   for i in np.arange(pars.size):
     a = pars[i]
-    if np.all((c >= a.c - d)and(c <= a.c + d)): # не работает, реализовать через длину вектора
-      c = np.random.uniform(0, Leng, (1, 3))
+    if (np.linalg.norm(c - a.c) <= d): # возможно работает
+      c = np.random.uniform(0, Leng, (3))
       i = -1
       continue
-  v = np.random.uniform(-Vmax, Vmax, (1, 3))
+  v = np.random.uniform(-Vmax, Vmax, (3))
   n += 1
   print (n)
   return Particle(c, v)
@@ -129,15 +129,15 @@ def timego(pars, tick):
 
 
 def main():  
-  zeit = int(100)
+  t = int(10)
   start = time.time() # точка отсчета времени
   pars = []
   cell_gen(pars) # генерация сеткой
   Particle.display(pars[N//2])
-  # rand_gen(pars) # случайная генерация, пока не работает
+  # rand_gen(pars) # случайная генерация, возможно работает как надо
   #for i in np.arange(N): # выводит характеристики всех частиц
   #  Particle.display(pars[i])
-  timego(pars, zeit)
+  timego(pars, t)
   end = time.time() - start # собственно время работы программы
   print(end) # вывод времени
 
