@@ -6,7 +6,7 @@ import random
 import os
 
 # глобальные переменные
-N = int(2000) # количество частиц
+N = int(1000) # количество частиц
 Mass = int(1) # масса материи
 # m = float(Mass/N) # масса одной частицы
 Vmax = int(1)  # максимальная скорость частицы
@@ -92,6 +92,11 @@ def calc_ax(pars):
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
             axel(pars[i], pars[j])
+        
+        
+def null_ax(pars):
+    for i in np.arange(N):
+        pars[i].a = np.array([0, 0, 0]) 
       
 
 def first_move_one(part):
@@ -101,8 +106,10 @@ def first_move_one(part):
 
 def first_move(pars):
     # двигает все частицы в первый раз
+    calc_ax(pars)
     for i in np.arange(N):
         first_move_one(pars[i])
+    null_ax(pars)
 
 
 def move_one(part):
@@ -116,24 +123,26 @@ def move_one(part):
 def move(pars):
     #двигает все частицы
     for i in np.arange(N):
-        move_one(pars[i])
+        move_one(pars[i])  
    
     
 def timego(pars, tick):
+    print(0)
     first_move(pars)
+    Particle.display(pars[N//2])
     for i in np.arange(tick - 1):
-        print(i)
+        print(i+1)
         calc_ax(pars)
         move(pars)
         Particle.display(pars[N//2])
+        null_ax(pars)
 
 
 def main():  
-    t = int(10)
+    t = int(10) # тики
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
-    Particle.display(pars[N//2])
     # rand_gen(pars) # случайная генерация, возможно работает как надо
     #for i in np.arange(N): # выводит характеристики всех частиц
     #  Particle.display(pars[i])
