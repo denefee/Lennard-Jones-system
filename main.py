@@ -17,11 +17,11 @@ Leng = int(10) # длина коробки
 
 class Particle:
     """Класс частиц"""
-    def __init__(self, c, v, a = np.array([0, 0, 0])):
+    def __init__(self, c, v, a = np.array([0, 0, 0]), lc = np.array([0, 0, 0])):
         self.c = c
         self.v = v
         self.a = a
-        self.lc = c
+        self.lc = lc
 
     def display(self):
         return print('Координаты: ' + np.array2string(self.c) + 
@@ -32,7 +32,7 @@ class Particle:
 def rand_gen_char(pars):
     # генерирует частицу с уникальной случайной координатой
     n = 0
-    c = np.random.uniform(0, Leng, (1, 3))
+    c = np.random.uniform(0, Leng, (3))
     for i in np.arange(pars.size):
         a = pars[i]
         if (np.linalg.norm(c - a.c) <= d): # возможно работает
@@ -57,17 +57,17 @@ def cell_gen(pars):
     n = 0
     flag = True
     reb = math.ceil(N**(1/3))
-    dl = Leng / (reb - 1)
+    dl = Leng/reb
     for i in np.arange(reb):
-        x = i*dl
+        x = dl/2 + i*dl
         if (flag == False):
             break
         for j in np.arange(reb):
-            y = j*dl
+            y = dl/2 + j*dl
             if (flag == False):
                 break
             for k in np.arange(reb):
-                z = k*dl
+                z = dl/2 + k*dl
                 n += 1
                 c = np.array([x, y, z])
                 v = np.random.uniform(-Vmax, Vmax, (3))
@@ -80,11 +80,27 @@ def cell_gen(pars):
 
 def axel(part, part1):
     # считает силы взаимодействия между данными частицами и меняет их ускорения
+    half = Leng/2
     vecr = part1.c - part.c
+    p1copy = np.copy(part1.c)
+    if (vecr[0] > half):
+        p1copy[0] = p1copy[0] - Leng
+    if (vecr[0] < -half):
+        p1copy[0] = p1copy[0] + Leng
+    if (vecr[1] > half):
+        p1copy[1] = p1copy[1] - Leng
+    if (vecr[1] < -half):
+        p1copy[1] = p1copy[1] + Leng
+    if (vecr[2] > half):
+        p1copy[2] = p1copy[2] - Leng
+    if (vecr[2] < -half):
+        p1copy[2] = p1copy[2] + Leng
+    vecr = p1copy - part.c
     modr = np.linalg.norm(vecr)
-    ac = (24/(modr**8) - 48/(modr**14))*vecr
-    part.a = part.a + ac
-    part1.a = part1.a - ac
+    if (modr > 0.00001):
+        ac = (24/(modr**8) - 48/(modr**14))*vecr
+        part.a = part.a + ac
+        part1.a = part1.a - ac
   
   
 def calc_ax(pars):
@@ -97,26 +113,29 @@ def calc_ax(pars):
 def null_ax(pars):
     for i in np.arange(N):
         pars[i].a = np.array([0, 0, 0]) 
-      
-
-def first_move_one(part):
-    # двигает частицу в первый раз
-    part.c = part.c + part.v*dt + 0.5*(dt**2)*part.a
 
 
+def one_first_move(part):
+    mem = np.copy(part.c)
+    part.c = part.c + dt*(part.v) + 0.5*dt*dt*(part.a)
+    part.lc = np.copy(mem)
+    print(part.lc)
+    print(part.c)
+    
+    
 def first_move(pars):
     # двигает все частицы в первый раз
     calc_ax(pars)
     for i in np.arange(N):
-        first_move_one(pars[i])
+        one_first_move(pars[i])
     null_ax(pars)
 
 
 def move_one(part):
     #двигает частицу используя схему Верле
-    mem = part.c
-    part.c = 2*part.c - part.lc + (dt**2)*part.a
-    part.lc = mem
+    mem = np.copy(part.c)
+    part.c = 2*part.c - part.lc + part.a*dt**2
+    part.lc = np.copy(mem)
     part.v += part.a*dt
     
     
@@ -129,12 +148,12 @@ def move(pars):
 def timego(pars, tick):
     print(0)
     first_move(pars)
-    Particle.display(pars[N//2])
+    Particle.display(pars[N-1])
     for i in np.arange(tick - 1):
         print(i+1)
         calc_ax(pars)
         move(pars)
-        Particle.display(pars[N//2])
+        Particle.display(pars[N-1])
         null_ax(pars)
 
 
@@ -143,6 +162,7 @@ def main():
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
+    Particle.display(pars[N-1])
     # rand_gen(pars) # случайная генерация, возможно работает как надо
     #for i in np.arange(N): # выводит характеристики всех частиц
     #  Particle.display(pars[i])
