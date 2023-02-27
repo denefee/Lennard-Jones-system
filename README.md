@@ -1,1 +1,1 @@
-# Norman_2sem
+# model of lennard-jones system
