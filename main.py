@@ -6,13 +6,13 @@ import random
 import os
 
 # глобальные переменные
-N = int(1000) # количество частиц
+N = int(100) # количество частиц
 Mass = int(1) # масса материи
 # m = float(Mass/N) # масса одной частицы
-Vmax = int(1)  # максимальная скорость частицы
-d = float(0.01) # delta-окрестность
+Vmax = int(3)  # максимальная скорость частицы
+d = float(0.0001) # delta-окрестность
 dt = float(0.001) # тик
-Leng = int(10) # длина коробки
+Leng = int(1) # длина коробки
 
 
 class Particle:
@@ -90,7 +90,7 @@ def axel(part, part1):
             p1copy[i] = p1copy[i] + Leng
     vecr = p1copy - part.c
     modr = np.linalg.norm(vecr)
-    if (modr > 0.00001):
+    if (modr > d):
         ac = (24/(modr**8) - 48/(modr**14))*vecr
         part.a = part.a + ac
         part1.a = part1.a - ac
@@ -104,13 +104,16 @@ def calc_ax(pars):
         
         
 def null_ax(pars):
+    # обнуляет все ускорения
     for i in np.arange(N):
         pars[i].a = np.array([0, 0, 0]) 
 
 
 def one_first_move(part):
+    # двигает одну частицу в первый раз
     mem = np.copy(part.c)
     part.c = part.c + dt*(part.v) + 0.5*dt*dt*(part.a)
+    part.v = part.v + dt*(part.a)
     part.lc = np.copy(mem)
     
     
@@ -119,7 +122,6 @@ def first_move(pars):
     calc_ax(pars)
     for i in np.arange(N):
         one_first_move(pars[i])
-    null_ax(pars)
 
 
 def move_one(part):
@@ -127,33 +129,102 @@ def move_one(part):
     mem = np.copy(part.c)
     part.c = 2*part.c - part.lc + part.a*dt**2
     part.lc = np.copy(mem)
-    part.v += part.a*dt
+    part.v = part.v + part.a*dt
     
     
 def move(pars):
     #двигает все частицы
     for i in np.arange(N):
         move_one(pars[i])  
-   
+        
+        
+def begin_impulse(pars):
+    # считает начальный импульс
+    summ = np.array([0.0, 0.0, 0.0])
+    for i in np.arange(N):
+        summ = summ + pars[i].v
+    print('Суммарный начальный импульс: ' + np.array2string(summ))
+    return summ
+    
+    
+def impulse(pars, imp):
+    # считает как изменился испульс по сранвению с началом
+    summ = np.array([0.0, 0.0, 0.0])
+    for i in np.arange(N):
+        summ = summ + pars[i].v
+    summ = summ - imp
+    print('Изменение начального импульса: ' + np.array2string(summ))
+        
+        
+def potentwo(part, part1):
+    # считает потенциальную энергию взаимодействия двух частиц
+    half = Leng/2
+    vecr = part1.c - part.c
+    p1copy = np.copy(part1.c)
+    for i in np.arange(3):
+        if (vecr[i] > half):
+            p1copy[i] = p1copy[i] - Leng
+        if (vecr[i] < -half):
+            p1copy[i] = p1copy[i] + Leng
+    vecr = p1copy - part.c
+    modr = np.linalg.norm(vecr)
+    if (modr > d):
+        u = 4/(modr**12) - 4/(modr**6)
+    else:
+        u = 0
+    return u
+        
+        
+def calc_poten(pars):
+    # вычисляет потенциальную энергию взаимодейсвтия всех частиц
+    pot = 0
+    for i in np.arange(N-1):
+        for j in np.arange(i+1, N):
+            pot = pot + potentwo(pars[i], pars[j])
+    return pot
+    
+    
+def begin_energy(pars):
+    summ = 0
+    for i in np.arange(N):
+        summ = summ + (np.linalg.norm(pars[i].v)**2)/2
+    summ = summ + calc_poten(pars)
+    print('Суммарная энергия: ' + np.array2string(summ))
+    return summ
+    
+    
+def energy(pars, eng):
+    summ = 0
+    for i in np.arange(N):
+        summ = summ + (np.linalg.norm(pars[i].v)**2)/2
+    summ = summ + calc_poten(pars)
+    print('Флуктуация энергии: ' + np.array2string(summ - eng))
+
     
 def timego(pars, tick):
+    # запускает счёт времени
     print(0)
     first_move(pars)
-    Particle.display(pars[N-1])
+    imp = begin_impulse(pars)
+    eng = begin_energy(pars)
+    # Particle.display(pars[N//2])
+    null_ax(pars)
     for i in np.arange(tick - 1):
-        print(i+1)
+        print(i + 1)
         calc_ax(pars)
         move(pars)
-        Particle.display(pars[N-1])
+        # Particle.display(pars[N//2])
         null_ax(pars)
+        impulse(pars, imp)
+        energy(pars, eng)
 
 
 def main():  
-    t = int(10) # тики
+    t = int(100) # тики
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
-    Particle.display(pars[N-1])
+    # Particle.display(pars[N-1])
     # rand_gen(pars) # случайная генерация, возможно работает как надо
     #for i in np.arange(N): # выводит характеристики всех частиц
     #  Particle.display(pars[i])
