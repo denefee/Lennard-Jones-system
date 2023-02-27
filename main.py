@@ -83,18 +83,11 @@ def axel(part, part1):
     half = Leng/2
     vecr = part1.c - part.c
     p1copy = np.copy(part1.c)
-    if (vecr[0] > half):
-        p1copy[0] = p1copy[0] - Leng
-    if (vecr[0] < -half):
-        p1copy[0] = p1copy[0] + Leng
-    if (vecr[1] > half):
-        p1copy[1] = p1copy[1] - Leng
-    if (vecr[1] < -half):
-        p1copy[1] = p1copy[1] + Leng
-    if (vecr[2] > half):
-        p1copy[2] = p1copy[2] - Leng
-    if (vecr[2] < -half):
-        p1copy[2] = p1copy[2] + Leng
+    for i in np.arange(3):
+        if (vecr[i] > half):
+            p1copy[i] = p1copy[i] - Leng
+        if (vecr[i] < -half):
+            p1copy[i] = p1copy[i] + Leng
     vecr = p1copy - part.c
     modr = np.linalg.norm(vecr)
     if (modr > 0.00001):
@@ -119,8 +112,6 @@ def one_first_move(part):
     mem = np.copy(part.c)
     part.c = part.c + dt*(part.v) + 0.5*dt*dt*(part.a)
     part.lc = np.copy(mem)
-    print(part.lc)
-    print(part.c)
     
     
 def first_move(pars):
