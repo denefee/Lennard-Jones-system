@@ -15,6 +15,13 @@ dt = float(0.001) # тик
 Leng = int(1) # длина коробки
 
 
+# открытие файлов для записи импульса и энергии
+impt = open('impulse.txt', 'w')
+kint = open('kinetic.txt', 'w')
+pott = open('potential.txt', 'w')
+mect = open('mechanic.txt', 'w')
+
+
 class Particle:
     """Класс частиц"""
     def __init__(self, c, v, a = np.array([0, 0, 0]), lc = np.array([0, 0, 0])):
@@ -136,25 +143,7 @@ def move(pars):
     #двигает все частицы
     for i in np.arange(N):
         move_one(pars[i])  
-        
-        
-def begin_impulse(pars):
-    # считает начальный импульс
-    summ = np.array([0.0, 0.0, 0.0])
-    for i in np.arange(N):
-        summ = summ + pars[i].v
-    print('Суммарный начальный импульс: ' + np.array2string(summ))
-    return summ
-    
-    
-def impulse(pars, imp):
-    # считает как изменился испульс по сранвению с началом
-    summ = np.array([0.0, 0.0, 0.0])
-    for i in np.arange(N):
-        summ = summ + pars[i].v
-    summ = summ - imp
-    print('Изменение начального импульса: ' + np.array2string(summ))
-        
+
         
 def potentwo(part, part1):
     # считает потенциальную энергию взаимодействия двух частиц
@@ -173,40 +162,49 @@ def potentwo(part, part1):
     else:
         u = 0
     return u
+    
+    
+def impulse(pars):
+    # считает импульс всего
+    summ = np.array([0.0, 0.0, 0.0])
+    for i in np.arange(N):
+        summ = summ + pars[i].v
+    impt.write(np.array2string(summ) + '\n')
         
         
-def calc_poten(pars):
+def poten_eng(pars):
     # вычисляет потенциальную энергию взаимодейсвтия всех частиц
     pot = 0
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
             pot = pot + potentwo(pars[i], pars[j])
-    return pot
-    
-    
-def begin_energy(pars):
-    summ = 0
+    pott.write(np.array2string(pot) + '\n')
+    return pot 
+        
+        
+def kinetic_eng(pars):
+    # считает общую кинетичскую энергию
+    kin = 0
     for i in np.arange(N):
-        summ = summ + (np.linalg.norm(pars[i].v)**2)/2
-    summ = summ + calc_poten(pars)
-    print('Суммарная энергия: ' + np.array2string(summ))
-    return summ
-    
-    
-def energy(pars, eng):
-    summ = 0
-    for i in np.arange(N):
-        summ = summ + (np.linalg.norm(pars[i].v)**2)/2
-    summ = summ + calc_poten(pars)
-    print('Флуктуация энергии: ' + np.array2string(summ - eng))
+        kin = kin + (np.linalg.norm(pars[i].v)**2)/2
+    kint.write(np.array2string(kin) + '\n')
+    return kin
+
+
+def eng(pars):
+    # считает полную механическую энергию
+    pot = poten_eng(pars)
+    kin = kinetic_eng(pars)
+    summ = pot + kin
+    mect.write(np.array2string(summ) + '\n')
 
     
 def timego(pars, tick):
     # запускает счёт времени
     print(0)
     first_move(pars)
-    imp = begin_impulse(pars)
-    eng = begin_energy(pars)
+    impulse(pars)
+    eng(pars)
     # Particle.display(pars[N//2])
     null_ax(pars)
     for i in np.arange(tick - 1):
@@ -215,8 +213,8 @@ def timego(pars, tick):
         move(pars)
         # Particle.display(pars[N//2])
         null_ax(pars)
-        impulse(pars, imp)
-        energy(pars, eng)
+        impulse(pars)
+        eng(pars)
 
 
 def main():  
@@ -235,3 +233,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    
+# закрытие файлов
+impt.close()
+kint.close()
+mect.close()
+pott.close()
