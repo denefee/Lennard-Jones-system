@@ -9,7 +9,7 @@ import os
 N = int(100) # количество частиц
 Mass = int(1) # масса материи
 # m = float(Mass/N) # масса одной частицы
-Vmax = int(3)  # максимальная скорость частицы
+Vmax = int(0.1)  # максимальная скорость частицы
 d = float(0.0001) # delta-окрестность
 dt = float(0.001) # тик
 Leng = int(1) # длина коробки
@@ -120,6 +120,11 @@ def one_first_move(part):
     # двигает одну частицу в первый раз
     mem = np.copy(part.c)
     part.c = part.c + dt*(part.v) + 0.5*dt*dt*(part.a)
+    for i in np.arange(0, 3, 1):
+        while (part.c[i] > Leng):
+            part.c[i] = part.c[i] - Leng
+        while (part.c[i] < 0):
+            part.c[i] = part.c[i] + Leng
     part.v = part.v + dt*(part.a)
     part.lc = np.copy(mem)
     
@@ -135,6 +140,11 @@ def move_one(part):
     #двигает частицу используя схему Верле
     mem = np.copy(part.c)
     part.c = 2*part.c - part.lc + part.a*dt**2
+    for i in np.arange(0, 3, 1):
+        while (part.c[i] > Leng):
+            part.c[i] = part.c[i] - Leng
+        while (part.c[i] < 0):
+            part.c[i] = part.c[i] + Leng
     part.lc = np.copy(mem)
     part.v = part.v + part.a*dt
     
