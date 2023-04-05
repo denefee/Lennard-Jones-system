@@ -11,11 +11,11 @@ Mass = int(1) # масса материи
 # m = float(Mass/N) # масса одной частицы
 Vmax = int(0.1)  # максимальная скорость частицы
 d = float(0.00001) # delta-окрестность
-dt = float(0.001) # тик
+dt = float(0.0001) # тик
 Leng = int(1) # длина коробки
 
 
-# открытие файлов для записи импульса и энергии
+# opens files with data 
 impt = open('imp.txt', 'w')
 kint = open('kin.txt', 'w')
 pott = open('pot.txt', 'w')
@@ -23,34 +23,34 @@ mect = open('mec.txt', 'w')
 
 
 class Particle:
-    """Класс частиц"""
+    """Particle class"""
     def __init__(self, c, v, a = np.array([0, 0, 0]), lc = np.array([0, 0, 0])):
-        self.c = c # координата
-        self.v = v # скорость
-        self.a = a # ускорение
-        self.lc = lc # предпоследняя координата
+        self.c = c # coordinate
+        self.v = v # velocity
+        self.a = a # acceleration
+        self.lc = lc # last coordinate
 
     def display(self):
-        # функция, выводящая данные о частице
-        return print('Координаты: ' + np.array2string(self.c) + 
-        ', Скорость: ' + np.array2string(self.v) + 
-        ', Ускорение: ' + np.array2string(self.a))
+        # displays information about particle
+        return print('Coordinate: ' + np.array2string(self.c) + 
+        ', Velocity: ' + np.array2string(self.v) + 
+        ', Acceleration: ' + np.array2string(self.a))
         
     def to_border(c):
-        # функция, возвращающая частицу в границы коробки
+        # returns the particle to the borders of the box
         for i in np.arange(3):
             while ((c[i] > Leng)or(c[i] < 0)):
                 c[i] = c[i] % Leng  
         
     def first_move(self):
-        # двигает одну частицу в первый раз
+        # moves the particle for the first time 
         self.lc = np.copy(self.c)
         self.c = self.c + dt*(self.v) + 0.5*(self.a)*dt**2
         Particle.to_border(self.c)
         self.v = self.v + dt*(self.a)
         
     def move(self):
-        # двигает частицу используя схему Верле
+        # moves the particle using the Verlet scheme
         mem = np.copy(self.c)
         self.c = 2*self.c - self.lc + self.a*dt**2
         Particle.to_border(self.c)
@@ -59,12 +59,12 @@ class Particle:
         
 
 def rand_gen_char(pars):
-    # генерирует частицу с уникальной случайной координатой
+    # generates a particle with a unique coordinate
     n = 0
     c = np.random.uniform(0, Leng, (3))
     for i in np.arange(pars.size):
         a = pars[i]
-        if (np.linalg.norm(c - a.c) <= d): # возможно работает
+        if (np.linalg.norm(c - a.c) <= d): # may work, but needs a test
             c = np.random.uniform(0, Leng, (3))
             i = -1
             continue
@@ -75,14 +75,14 @@ def rand_gen_char(pars):
   
   
 def rand_gen(pars):
-    # генерирует N частиц с уникальной рандомной координатой
+    # generates N particles with unique coordinates
     for i in np.arange(N):
         pars.append(rand_gen_char(pars))
         continue
 
 
 def cell_gen(pars):
-    # генерация сеткой
+    # cell generation
     n = 0
     key = 0
     flag = True
@@ -113,7 +113,7 @@ def cell_gen(pars):
 
 
 def axel(part, part1):
-    # считает силы взаимодействия между данными частицами и меняет их ускорения
+    # calculates the forces of interaction between these particles and changes their accelerations
     half = Leng/2
     vecr = part1.c - part.c
     p1copy = np.copy(part1.c)
@@ -131,33 +131,33 @@ def axel(part, part1):
   
   
 def calc_ax(pars):
-    # вычисляет ускорения всех частиц
+    # calculates the accelerations of all particles and changes them
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
             axel(pars[i], pars[j])
         
         
 def null_ax(pars):
-    # обнуляет все ускорения
+    # nullify all accelerations
     for i in np.arange(N):
         pars[i].a = np.array([0, 0, 0]) 
     
     
 def first_move(pars):
-    # двигает все частицы в первый раз
+    # moves all particles for the first time
     calc_ax(pars)
     for i in np.arange(N):
         Particle.first_move(pars[i])
     
     
 def move(pars):
-    # двигает все частицы
+    # moves all particles
     for i in np.arange(N):
         Particle.move(pars[i])  
 
         
 def potentwo(part, part1):
-    # считает потенциальную энергию взаимодействия двух частиц
+    # calculates the potential energy of the interaction of two particles
     half = Leng/2
     vecr = part1.c - part.c
     p1copy = np.copy(part1.c)
@@ -176,7 +176,7 @@ def potentwo(part, part1):
     
     
 def impulse(pars):
-    # считает суммарный импульс всех частиц
+    # calculates the total momentum of the system
     summ = np.array([0.0, 0.0, 0.0])
     for i in np.arange(N):
         summ = summ + pars[i].v
@@ -184,7 +184,7 @@ def impulse(pars):
         
         
 def poten_eng(pars):
-    # вычисляет потенциальную энергию взаимодейсвтия всех частиц
+    # calculates the potential energy of the interaction of all particles
     pot = 0
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
@@ -194,7 +194,7 @@ def poten_eng(pars):
         
         
 def kinetic_eng(pars):
-    # считает общую кинетичскую энергию
+    # calculates the total kinetic energy of the system
     kin = 0
     for i in np.arange(N):
         kin = kin + (np.linalg.norm(pars[i].v)**2)/2
@@ -203,7 +203,7 @@ def kinetic_eng(pars):
 
 
 def eng(pars):
-    # считает полную механическую энергию
+    # calculates the total mechanical energy of the system
     pot = poten_eng(pars)
     kin = kinetic_eng(pars)
     summ = pot + kin
@@ -211,7 +211,7 @@ def eng(pars):
 
     
 def timego(pars, tick):
-    # запускает счёт времени
+    # starts the simulation
     print(0)
     first_move(pars)
     impulse(pars)
@@ -229,7 +229,7 @@ def timego(pars, tick):
 
 
 def main():  
-    t = int(1000) # тики
+    t = int(1000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
@@ -246,7 +246,7 @@ if __name__ == "__main__":
     main()
     
     
-# закрытие файлов
+# close files with data 
 impt.close()
 kint.close()
 mect.close()
