@@ -25,16 +25,38 @@ mect = open('mec.txt', 'w')
 class Particle:
     """Класс частиц"""
     def __init__(self, c, v, a = np.array([0, 0, 0]), lc = np.array([0, 0, 0])):
-        self.c = c
-        self.v = v
-        self.a = a
-        self.lc = lc
+        self.c = c # координата
+        self.v = v # скорость
+        self.a = a # ускорение
+        self.lc = lc # предпоследняя координата
 
     def display(self):
+        # функция, выводящая данные о частице
         return print('Координаты: ' + np.array2string(self.c) + 
         ', Скорость: ' + np.array2string(self.v) + 
         ', Ускорение: ' + np.array2string(self.a))
-
+        
+    def to_border(c):
+        # функция, возвращающая частицу в границы коробки
+        for i in np.arange(3):
+            while ((c[i] > Leng)or(c[i] < 0)):
+                c[i] = c[i] % Leng  
+        
+    def first_move(self):
+        # двигает одну частицу в первый раз
+        self.lc = np.copy(self.c)
+        self.c = self.c + dt*(self.v) + 0.5*(self.a)*dt**2
+        Particle.to_border(self.c)
+        self.v = self.v + dt*(self.a)
+        
+    def move(self):
+        # двигает частицу используя схему Верле
+        mem = np.copy(self.c)
+        self.c = 2*self.c - self.lc + self.a*dt**2
+        Particle.to_border(self.c)
+        self.lc = np.copy(mem)
+        self.v = self.v + self.a*dt
+        
 
 def rand_gen_char(pars):
     # генерирует частицу с уникальной случайной координатой
@@ -119,41 +141,19 @@ def null_ax(pars):
     # обнуляет все ускорения
     for i in np.arange(N):
         pars[i].a = np.array([0, 0, 0]) 
-
-
-def first_one_move(part):
-    # двигает одну частицу в первый раз
-    mem = np.copy(part.c)
-    part.c = part.c + dt*(part.v) + 0.5*dt*dt*(part.a)
-    for i in np.arange(3):
-        while ((part.c[i] > Leng)or(part.c[i] < 0)):
-            part.c[i] = part.c[i] % Leng
-    part.v = part.v + dt*(part.a)
-    part.lc = np.copy(mem)
     
     
 def first_move(pars):
     # двигает все частицы в первый раз
     calc_ax(pars)
     for i in np.arange(N):
-        first_one_move(pars[i])
-
-
-def move_one(part):
-    #двигает частицу используя схему Верле
-    mem = np.copy(part.c)
-    part.c = 2*part.c - part.lc + part.a*dt**2
-    for i in np.arange(3):
-        while ((part.c[i] > Leng)or(part.c[i] < 0)):
-            part.c[i] = part.c[i] % Leng
-    part.lc = np.copy(mem)
-    part.v = part.v + part.a*dt
+        Particle.first_move(pars[i])
     
     
 def move(pars):
-    #двигает все частицы
+    # двигает все частицы
     for i in np.arange(N):
-        move_one(pars[i])  
+        Particle.move(pars[i])  
 
         
 def potentwo(part, part1):
@@ -176,7 +176,7 @@ def potentwo(part, part1):
     
     
 def impulse(pars):
-    # считает импульс всего
+    # считает суммарный импульс всех частиц
     summ = np.array([0.0, 0.0, 0.0])
     for i in np.arange(N):
         summ = summ + pars[i].v
