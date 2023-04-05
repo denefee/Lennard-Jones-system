@@ -7,7 +7,7 @@ y = np.array([])
 for i in np.arange(1, 1001):
     x = np.append(x, i)
 
-f = open('mechanic.txt')
+f = open('mec.txt')
 for line in f:
     y = np.append(y, float(line))
 f.close()
