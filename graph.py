@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 x = np.array([])
 y = np.array([])
 
-for i in np.arange(2, 101):
+for i in np.arange(1, 1001):
     x = np.append(x, i)
 
 f = open('mechanic.txt')

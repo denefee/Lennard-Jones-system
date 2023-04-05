@@ -10,16 +10,16 @@ N = int(100) # количество частиц
 Mass = int(1) # масса материи
 # m = float(Mass/N) # масса одной частицы
 Vmax = int(0.1)  # максимальная скорость частицы
-d = float(0.0001) # delta-окрестность
+d = float(0.00001) # delta-окрестность
 dt = float(0.001) # тик
 Leng = int(1) # длина коробки
 
 
 # открытие файлов для записи импульса и энергии
-impt = open('impulse.txt', 'w')
-kint = open('kinetic.txt', 'w')
-pott = open('potential.txt', 'w')
-mect = open('mechanic.txt', 'w')
+impt = open('imp.txt', 'w')
+kint = open('kin.txt', 'w')
+pott = open('pot.txt', 'w')
+mect = open('mec.txt', 'w')
 
 
 class Particle:
@@ -62,9 +62,10 @@ def rand_gen(pars):
 def cell_gen(pars):
     # генерация сеткой
     n = 0
+    key = 0
     flag = True
     reb = math.ceil(N**(1/3))
-    dl = Leng/reb
+    dl = Leng/reb  
     for i in np.arange(reb):
         x = dl/2 + i*dl
         if (flag == False):
@@ -77,8 +78,12 @@ def cell_gen(pars):
                 z = dl/2 + k*dl
                 n += 1
                 c = np.array([x, y, z])
-                v = np.random.uniform(-Vmax, Vmax, (3))
-                print (n)
+                if key == 0:
+                    v = np.random.uniform(-Vmax, Vmax, (3))
+                    key += 1
+                else:
+                    v = -v
+                    key -= 1
                 pars.append(Particle(c, v))
                 if (n == N):
                     flag = False
@@ -116,15 +121,13 @@ def null_ax(pars):
         pars[i].a = np.array([0, 0, 0]) 
 
 
-def one_first_move(part):
+def first_one_move(part):
     # двигает одну частицу в первый раз
     mem = np.copy(part.c)
     part.c = part.c + dt*(part.v) + 0.5*dt*dt*(part.a)
-    for i in np.arange(0, 3, 1):
-        while (part.c[i] > Leng):
-            part.c[i] = part.c[i] - Leng
-        while (part.c[i] < 0):
-            part.c[i] = part.c[i] + Leng
+    for i in np.arange(3):
+        while ((part.c[i] > Leng)or(part.c[i] < 0)):
+            part.c[i] = part.c[i] % Leng
     part.v = part.v + dt*(part.a)
     part.lc = np.copy(mem)
     
@@ -133,18 +136,16 @@ def first_move(pars):
     # двигает все частицы в первый раз
     calc_ax(pars)
     for i in np.arange(N):
-        one_first_move(pars[i])
+        first_one_move(pars[i])
 
 
 def move_one(part):
     #двигает частицу используя схему Верле
     mem = np.copy(part.c)
     part.c = 2*part.c - part.lc + part.a*dt**2
-    for i in np.arange(0, 3, 1):
-        while (part.c[i] > Leng):
-            part.c[i] = part.c[i] - Leng
-        while (part.c[i] < 0):
-            part.c[i] = part.c[i] + Leng
+    for i in np.arange(3):
+        while ((part.c[i] > Leng)or(part.c[i] < 0)):
+            part.c[i] = part.c[i] % Leng
     part.lc = np.copy(mem)
     part.v = part.v + part.a*dt
     
@@ -222,13 +223,13 @@ def timego(pars, tick):
         calc_ax(pars)
         move(pars)
         # Particle.display(pars[N//2])
-        null_ax(pars)
         impulse(pars)
         eng(pars)
+        null_ax(pars)
 
 
 def main():  
-    t = int(100) # тики
+    t = int(1000) # тики
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
