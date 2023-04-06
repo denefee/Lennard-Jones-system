@@ -6,13 +6,14 @@ import random
 import os
 
 # глобальные переменные
-N = int(100) # количество частиц
+N = int(125) # количество частиц
 Mass = int(1) # масса материи
 # m = float(Mass/N) # масса одной частицы
 Vmax = int(0.1)  # максимальная скорость частицы
-d = float(0.00001) # delta-окрестность
-dt = float(0.0001) # тик
+d = float(0.001) # delta-окрестность
+dt = float(0.001) # тик
 Leng = int(1) # длина коробки
+half = Leng/2 # половина длины коробки
 
 
 # opens files with data 
@@ -31,7 +32,7 @@ class Particle:
         self.lc = lc # last coordinate
 
     def display(self):
-        # displays information about particle
+        # displays information about the particle
         return print('Coordinate: ' + np.array2string(self.c) + 
         ', Velocity: ' + np.array2string(self.v) + 
         ', Acceleration: ' + np.array2string(self.a))
@@ -41,6 +42,18 @@ class Particle:
         for i in np.arange(3):
             while ((c[i] > Leng)or(c[i] < 0)):
                 c[i] = c[i] % Leng  
+                
+    def vec_to_virtual_copy(partc, part1c):
+        # returns a vector directed to a virtual copy of particle "part1"
+        vecr = part1c - partc
+        p1copy = np.copy(part1c)
+        for i in np.arange(3):
+            if (vecr[i] > half):
+                p1copy[i] = p1copy[i] - Leng
+            if (vecr[i] < -half):
+                p1copy[i] = p1copy[i] + Leng
+        vecr = p1copy - partc
+        return vecr
         
     def first_move(self):
         # moves the particle for the first time 
@@ -114,18 +127,10 @@ def cell_gen(pars):
 
 def axel(part, part1):
     # calculates the forces of interaction between these particles and changes their accelerations
-    half = Leng/2
-    vecr = part1.c - part.c
-    p1copy = np.copy(part1.c)
-    for i in np.arange(3):
-        if (vecr[i] > half):
-            p1copy[i] = p1copy[i] - Leng
-        if (vecr[i] < -half):
-            p1copy[i] = p1copy[i] + Leng
-    vecr = p1copy - part.c
+    vecr = Particle.vec_to_virtual_copy(part.c, part1.c)
     modr = np.linalg.norm(vecr)
     if (modr > d):
-        ac = (24/(modr**8) - 48/(modr**14))*vecr
+        ac = (48/(modr**14) - 24/(modr**8))*vecr
         part.a = part.a + ac
         part1.a = part1.a - ac
   
@@ -138,7 +143,7 @@ def calc_ax(pars):
         
         
 def null_ax(pars):
-    # nullify all accelerations
+    # nullifies all accelerations
     for i in np.arange(N):
         pars[i].a = np.array([0, 0, 0]) 
     
@@ -158,15 +163,7 @@ def move(pars):
         
 def potentwo(part, part1):
     # calculates the potential energy of the interaction of two particles
-    half = Leng/2
-    vecr = part1.c - part.c
-    p1copy = np.copy(part1.c)
-    for i in np.arange(3):
-        if (vecr[i] > half):
-            p1copy[i] = p1copy[i] - Leng
-        if (vecr[i] < -half):
-            p1copy[i] = p1copy[i] + Leng
-    vecr = p1copy - part.c
+    vecr = Particle.vec_to_virtual_copy(part.c, part1.c)
     modr = np.linalg.norm(vecr)
     if (modr > d):
         u = 4/(modr**12) - 4/(modr**6)
@@ -197,12 +194,12 @@ def kinetic_eng(pars):
     # calculates the total kinetic energy of the system
     kin = 0
     for i in np.arange(N):
-        kin = kin + (np.linalg.norm(pars[i].v)**2)/2
+        kin += (np.linalg.norm(pars[i].v)**2)/2
     kint.write(np.array2string(kin) + '\n')
     return kin
 
 
-def eng(pars):
+def energy(pars):
     # calculates the total mechanical energy of the system
     pot = poten_eng(pars)
     kin = kinetic_eng(pars)
@@ -215,7 +212,7 @@ def timego(pars, tick):
     print(0)
     first_move(pars)
     impulse(pars)
-    eng(pars)
+    energy(pars)
     # Particle.display(pars[N//2])
     null_ax(pars)
     for i in np.arange(tick - 1):
@@ -224,16 +221,15 @@ def timego(pars, tick):
         move(pars)
         # Particle.display(pars[N//2])
         impulse(pars)
-        eng(pars)
+        energy(pars)
         null_ax(pars)
 
 
 def main():  
-    t = int(100) # ticks
+    t = int(200) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
-    # Particle.display(pars[N-1])
     # rand_gen(pars) # случайная генерация, возможно работает как надо
     #for i in np.arange(N): # выводит характеристики всех частиц
     #  Particle.display(pars[i])
