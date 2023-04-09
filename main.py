@@ -3,12 +3,11 @@ import matplotlib as plt
 import numpy as np
 import time
 import random
-import os
 
 # глобальные переменные
 N = int(8) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
-d = float(0.001) # delta-окрестность
+d = float(0.0001) # delta-окрестность
 dt = float(0.001) # тик
 Leng = int(10) # длина коробки
 half = Leng/2 # половина длины коробки
@@ -19,6 +18,7 @@ impt = open('imp.txt', 'w')
 kint = open('kin.txt', 'w')
 pott = open('pot.txt', 'w')
 mect = open('mec.txt', 'w')
+maxwt = open('maxw.txt', 'w')
 
 
 class Particle:
@@ -203,6 +203,16 @@ def energy(pars):
     kin = kinetic_eng(pars)
     summ = pot + kin
     mect.write(str(summ) + '\n')
+    
+    
+def maxwell(pars):
+    list = np.array([])
+    for i in np.arange(N):
+        velocity = np.linalg.norm(pars[i].v)
+        list = np.append(list, velocity)
+    list = np.sort(list)
+    for i in np.arange(N):
+        maxwt.write(str(list[i]) + '\n')
 
     
 def timego(pars, tick):
@@ -222,10 +232,11 @@ def timego(pars, tick):
         null_ax(pars)
         if i%(tick//10) == 0:
             print (i)
+    maxwell(pars)
 
 
 def main():  
-    t = int(10000) # ticks
+    t = int(1000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
@@ -246,3 +257,4 @@ impt.close()
 kint.close()
 mect.close()
 pott.close()
+maxwt.close()
