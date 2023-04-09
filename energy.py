@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 x = np.array([])
-for i in np.arange(2000):
+for i in np.arange(4000):
     x = np.append(x, (i))
 
 ymec = np.array([])
@@ -25,12 +25,14 @@ f.close()
 
 
 plt.xlabel(r'Время работы программы, тиков', fontsize=14)
-plt.ylabel(r'Механическая энергия', fontsize=14)
-plt.title(r'График', fontsize=14)
+plt.ylabel(r'Энергия, у.е.', fontsize=14)
+plt.title(r'График зависимости разных видов энергии от времени', fontsize=14)
 plt.grid(True)
-plt.errorbar(x, ymec, fmt='o', color='black', capsize=3)
-plt.errorbar(x, ykin, fmt='o', color='red', capsize=3)
-plt.errorbar(x, ypot, fmt='o', color='green', capsize=3)
+plt.errorbar(x, ymec, fmt='o', color='black', capsize=3, label=r'Полная механическая энергия')
+plt.errorbar(x, ykin, fmt='o', color='red', capsize=3, label=r'Кинетическая энергия частиц')
+plt.errorbar(x, ypot, fmt='o', color='green', capsize=3, label=r'Потенциальная энергия частиц')
+plt.legend(loc='best', fontsize=12)
+
 #p = np.polyfit(x, y, 1, full=True, cov=False)
 #print(p)
 #p = p[0]

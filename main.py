@@ -5,7 +5,7 @@ import time
 import random
 
 # глобальные переменные
-N = int(8) # количество частиц
+N = int(125) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 d = float(0.0001) # delta-окрестность
 dt = float(0.001) # тик
@@ -236,7 +236,7 @@ def timego(pars, tick):
 
 
 def main():  
-    t = int(1000) # ticks
+    t = int(4000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
