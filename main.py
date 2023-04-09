@@ -6,10 +6,10 @@ import random
 import os
 
 # глобальные переменные
-N = int(125) # количество частиц
+N = int(64) # количество частиц
 Mass = int(1) # масса материи
 # m = float(Mass/N) # масса одной частицы
-Vmax = int(0.1)  # максимальная скорость частицы
+Vmax = int(0.01)  # максимальная скорость частицы
 d = float(0.001) # delta-окрестность
 dt = float(0.001) # тик
 Leng = int(1) # длина коробки
@@ -40,7 +40,7 @@ class Particle:
     def to_border(c):
         # returns the particle to the borders of the box
         for i in np.arange(3):
-            while ((c[i] > Leng)or(c[i] < 0)):
+            while ((c[i] >= Leng)or(c[i] < 0)):
                 c[i] = c[i] % Leng  
                 
     def vec_to_virtual_copy(partc, part1c):
@@ -67,7 +67,7 @@ class Particle:
         mem = np.copy(self.c)
         self.c = 2*self.c - self.lc + self.a*dt**2
         Particle.to_border(self.c)
-        self.lc = np.copy(mem)
+        self.lc = mem
         self.v = self.v + self.a*dt
         
 
