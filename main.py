@@ -6,9 +6,9 @@ import random
 import os
 
 # глобальные переменные
-N = int(64) # количество частиц
+N = int(8) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
-d = float(0.01) # delta-окрестность
+d = float(0.001) # delta-окрестность
 dt = float(0.001) # тик
 Leng = int(10) # длина коробки
 half = Leng/2 # половина длины коробки
@@ -129,7 +129,7 @@ def axel(part, part1):
     modr = np.linalg.norm(vecr)
     if (modr < d):
         modr = d
-    ac = 24*(2*np.power(modr, -14) - np.power(modr, -8))*vecr
+    ac = -24*(2*np.power(modr, -14) - np.power(modr, -8))*vecr
     part.a = part.a + ac
     part1.a = part1.a - ac
   
@@ -213,18 +213,19 @@ def timego(pars, tick):
     energy(pars)
     # Particle.display(pars[N//2])
     null_ax(pars)
-    for i in np.arange(tick - 1):
-        print(i + 1)
+    for i in np.arange(1, tick):
         calc_ax(pars)
         move(pars)
         # Particle.display(pars[N//2])
         impulse(pars)
         energy(pars)
         null_ax(pars)
+        if i%(tick//10) == 0:
+            print (i)
 
 
 def main():  
-    t = int(1000) # ticks
+    t = int(10000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
