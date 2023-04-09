@@ -5,9 +5,9 @@ import time
 import random
 
 # глобальные переменные
-N = int(125) # количество частиц
+N = int(27) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
-d = float(0.0001) # delta-окрестность
+d = float(0.0) # delta-окрестность
 dt = float(0.001) # тик
 Leng = int(10) # длина коробки
 half = Leng/2 # половина длины коробки
@@ -95,28 +95,33 @@ def rand_gen(pars):
 def cell_gen(pars):
     # cell generation
     n = 0
-    key = 0
+    key = True
     flag = True
     reb = math.ceil(np.cbrt(N))
-    dl = Leng/reb  
+    dl = Leng/reb 
+    dlhalf = dl/2
+    if (N%2 == 1):
+        zero = True
     for i in np.arange(reb):
-        x = dl/2 + i*dl
         if (flag == False):
             break
+        x = dlhalf + i*dl
         for j in np.arange(reb):
-            y = dl/2 + j*dl
             if (flag == False):
                 break
+            y = dlhalf + j*dl
             for k in np.arange(reb):
-                z = dl/2 + k*dl
+                z = dlhalf + k*dl
                 n += 1
                 c = np.array([x, y, z])
-                if key == 0:
+                if key == True:
                     v = np.random.uniform(-Vmax, Vmax, (3))
-                    key += 1
+                    key = False
                 else:
                     v = -v
-                    key -= 1
+                    key = True
+                if (n == N)and(zero):
+                    v = np.array([0.0, 0.0, 0.0])
                 pars.append(Particle(c, v))
                 if (n == N):
                     flag = False
@@ -129,9 +134,9 @@ def axel(part, part1):
     modr = np.linalg.norm(vecr)
     if (modr < d):
         modr = d
-    ac = -24*(2*np.power(modr, -14) - np.power(modr, -8))*vecr
-    part.a = part.a + ac
-    part1.a = part1.a - ac
+    ac = 24*(2*np.power(modr, -14) - np.power(modr, -8))*vecr
+    part.a = part.a - ac
+    part1.a = part1.a + ac
   
   
 def calc_ax(pars):
@@ -236,13 +241,13 @@ def timego(pars, tick):
 
 
 def main():  
-    t = int(4000) # ticks
+    t = int(5000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
     # rand_gen(pars) # случайная генерация, возможно работает как надо
     #for i in np.arange(N): # выводит характеристики всех частиц
-    #  Particle.display(pars[i])
+    #    Particle.display(pars[i])
     timego(pars, t)
     end = time.time() - start # собственно время работы программы
     print(end) # вывод времени
