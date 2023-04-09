@@ -7,12 +7,10 @@ import os
 
 # глобальные переменные
 N = int(64) # количество частиц
-Mass = int(1) # масса материи
-# m = float(Mass/N) # масса одной частицы
-Vmax = int(0.01)  # максимальная скорость частицы
-d = float(0.001) # delta-окрестность
+Vmax = float(1.0)  # максимальная скорость частицы
+d = float(0.01) # delta-окрестность
 dt = float(0.001) # тик
-Leng = int(1) # длина коробки
+Leng = int(10) # длина коробки
 half = Leng/2 # половина длины коробки
 
 
@@ -99,7 +97,7 @@ def cell_gen(pars):
     n = 0
     key = 0
     flag = True
-    reb = math.ceil(N**(1/3))
+    reb = math.ceil(np.cbrt(N))
     dl = Leng/reb  
     for i in np.arange(reb):
         x = dl/2 + i*dl
@@ -129,10 +127,11 @@ def axel(part, part1):
     # calculates the forces of interaction between these particles and changes their accelerations
     vecr = Particle.vec_to_virtual_copy(part.c, part1.c)
     modr = np.linalg.norm(vecr)
-    if (modr > d):
-        ac = (48/(modr**14) - 24/(modr**8))*vecr
-        part.a = part.a + ac
-        part1.a = part1.a - ac
+    if (modr < d):
+        modr = d
+    ac = 24*(2*np.power(modr, -14) - np.power(modr, -8))*vecr
+    part.a = part.a + ac
+    part1.a = part1.a - ac
   
   
 def calc_ax(pars):
@@ -165,10 +164,9 @@ def potentwo(part, part1):
     # calculates the potential energy of the interaction of two particles
     vecr = Particle.vec_to_virtual_copy(part.c, part1.c)
     modr = np.linalg.norm(vecr)
-    if (modr > d):
-        u = 4/(modr**12) - 4/(modr**6)
-    else:
-        u = 0
+    if (modr < d):
+        modr = d
+    u = 4*(np.power(modr, -12) - np.power(modr, -6))
     return u
     
     
@@ -186,7 +184,7 @@ def poten_eng(pars):
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
             pot = pot + potentwo(pars[i], pars[j])
-    pott.write(np.array2string(pot) + '\n')
+    pott.write(str(pot) + '\n')
     return pot 
         
         
@@ -194,8 +192,8 @@ def kinetic_eng(pars):
     # calculates the total kinetic energy of the system
     kin = 0
     for i in np.arange(N):
-        kin += (np.linalg.norm(pars[i].v)**2)/2
-    kint.write(np.array2string(kin) + '\n')
+        kin = kin + (np.linalg.norm(pars[i].v)**2)/2
+    kint.write(str(kin) + '\n')
     return kin
 
 
@@ -204,7 +202,7 @@ def energy(pars):
     pot = poten_eng(pars)
     kin = kinetic_eng(pars)
     summ = pot + kin
-    mect.write(np.array2string(summ) + '\n')
+    mect.write(str(summ) + '\n')
 
     
 def timego(pars, tick):
@@ -226,7 +224,7 @@ def timego(pars, tick):
 
 
 def main():  
-    t = int(200) # ticks
+    t = int(1000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой

@@ -2,25 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 x = np.array([])
-for i in np.arange(200):
+for i in np.arange(1000):
     x = np.append(x, (i))
 
 ymec = np.array([])
 f = open('mec.txt')
 for line in f:
-    ymec = np.append(ymec, np.log10(float(line)))
+    ymec = np.append(ymec, (float(line)))
 f.close()
 
 ypot = np.array([])
 f = open('pot.txt')
 for line in f:
-    ypot = np.append(ypot, np.log10(float(line)))
+    ypot = np.append(ypot, (float(line)))
 f.close()
 
 ykin = np.array([])
 f = open('kin.txt')
 for line in f:
-    ykin = np.append(ykin, np.log10(float(line)))
+    ykin = np.append(ykin, (float(line)))
 f.close()
 
 
