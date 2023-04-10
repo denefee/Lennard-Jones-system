@@ -241,7 +241,7 @@ def timego(pars, tick):
 
 
 def main():  
-    t = int(5000) # ticks
+    t = int(10000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
