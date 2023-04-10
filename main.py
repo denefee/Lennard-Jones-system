@@ -2,10 +2,9 @@ import math
 import matplotlib as plt
 import numpy as np
 import time
-import random
 
 # глобальные переменные
-N = int(27) # количество частиц
+N = int(64) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 d = float(0.0) # delta-окрестность
 dt = float(0.001) # тик
@@ -100,6 +99,7 @@ def cell_gen(pars):
     reb = math.ceil(np.cbrt(N))
     dl = Leng/reb 
     dlhalf = dl/2
+    zero = False
     if (N%2 == 1):
         zero = True
     for i in np.arange(reb):
@@ -120,7 +120,7 @@ def cell_gen(pars):
                 else:
                     v = -v
                     key = True
-                if (n == N)and(zero):
+                if ((n == N)and(zero == True)):
                     v = np.array([0.0, 0.0, 0.0])
                 pars.append(Particle(c, v))
                 if (n == N):
