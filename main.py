@@ -5,7 +5,7 @@ import time
 from particleclass import Particle
 
 # глобальные переменные
-N = int(512) # количество частиц
+N = int(64) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 d = float(0.0) # delta-окрестность
 dt = float(0.001) # тик
@@ -80,8 +80,8 @@ def cell_gen(pars):
                 if (n == N):
                     flag = False
                     break
-
-
+                
+                
 def axel(part, part1):
     # calculates the forces of interaction between these particles and changes their accelerations
     vecr = Particle.vec_to_virtual_copy(part.c, part1.c)
@@ -89,8 +89,8 @@ def axel(part, part1):
     if (modr < d):
         modr = d
     ac = 24*(2*np.power(modr, -14) - np.power(modr, -8))*vecr
-    part.a -= ac
-    part1.a += ac
+    part.a = part.a - ac
+    part1.a = part1.a + ac
   
   
 def calc_ax(pars):
@@ -117,7 +117,7 @@ def move(pars):
     # moves all particles
     for i in np.arange(N):
         Particle.move(pars[i])  
-
+       
         
 def potentwo(part, part1):
     # calculates the potential energy of the interaction of two particles
@@ -134,7 +134,7 @@ def impulse(pars):
     summ = np.array([0.0, 0.0, 0.0])
     for i in np.arange(N):
         summ = summ + pars[i].v
-    impt.write(np.array2string(summ) + '\n')
+    impt.write(np.array2strinvg(summ) + '\n')
         
         
 def poten_eng(pars):
@@ -142,7 +142,7 @@ def poten_eng(pars):
     pot = 0
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
-            pot += potentwo(pars[i], pars[j])
+            pot = pot + potentwo(pars[i], pars[j])
     pott.write(str(pot) + '\n')
     return pot 
         
@@ -151,7 +151,7 @@ def kinetic_eng(pars):
     # calculates the total kinetic energy of the system
     kin = 0
     for i in np.arange(N):
-        kin += (np.linalg.norm(pars[i].v)**2)/2
+        kin = kin + (np.linalg.norm(pars[i].v)**2)/2
     kint.write(str(kin) + '\n')
     return kin
 
@@ -177,12 +177,11 @@ def maxwell(pars):
 def average_way(pars):
     summ = np.array([0.0, 0.0, 0.0])
     for i in np.arange(N):
-        summ += (pars[i].way)
-    summ = np.linalg.norm(summ)
+        summ = summ + (pars[i].way)
+    summ = np.linalg.norm(summ)/N
     wayt.write(str(summ) + '\n')
     
 
-    
 def timego(pars, tick):
     # starts the simulation
     print(0)
@@ -206,7 +205,7 @@ def timego(pars, tick):
 
 
 def main():  
-    t = int(40) # ticks
+    t = int(10000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой
@@ -228,3 +227,4 @@ kint.close()
 mect.close()
 pott.close()
 maxwt.close()
+wayt.close()
