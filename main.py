@@ -19,6 +19,7 @@ kint = open('kin.txt', 'w')
 pott = open('pot.txt', 'w')
 mect = open('mec.txt', 'w')
 maxwt = open('maxw.txt', 'w')
+wayt = open('way.txt', 'w')
         
 
 def rand_gen_char(pars):
@@ -88,8 +89,8 @@ def axel(part, part1):
     if (modr < d):
         modr = d
     ac = 24*(2*np.power(modr, -14) - np.power(modr, -8))*vecr
-    part.a = part.a - ac
-    part1.a = part1.a + ac
+    part.a -= ac
+    part1.a += ac
   
   
 def calc_ax(pars):
@@ -141,7 +142,7 @@ def poten_eng(pars):
     pot = 0
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
-            pot = pot + potentwo(pars[i], pars[j])
+            pot += potentwo(pars[i], pars[j])
     pott.write(str(pot) + '\n')
     return pot 
         
@@ -150,7 +151,7 @@ def kinetic_eng(pars):
     # calculates the total kinetic energy of the system
     kin = 0
     for i in np.arange(N):
-        kin = kin + (np.linalg.norm(pars[i].v)**2)/2
+        kin += (np.linalg.norm(pars[i].v)**2)/2
     kint.write(str(kin) + '\n')
     return kin
 
@@ -171,6 +172,15 @@ def maxwell(pars):
     list = np.sort(list)
     for i in np.arange(N):
         maxwt.write(str(list[i]) + '\n')
+        
+        
+def average_way(pars):
+    summ = np.array([0.0, 0.0, 0.0])
+    for i in np.arange(N):
+        summ += (pars[i].way)
+    summ = np.linalg.norm(summ)
+    wayt.write(str(summ) + '\n')
+    
 
     
 def timego(pars, tick):
@@ -179,6 +189,7 @@ def timego(pars, tick):
     first_move(pars)
     impulse(pars)
     energy(pars)
+    average_way(pars)
     # Particle.display(pars[N//2])
     null_ax(pars)
     for i in np.arange(1, tick):
@@ -187,6 +198,7 @@ def timego(pars, tick):
         # Particle.display(pars[N//2])
         impulse(pars)
         energy(pars)
+        average_way(pars)
         null_ax(pars)
         if i%(tick//10) == 0:
             print (i)
