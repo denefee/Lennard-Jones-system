@@ -134,7 +134,7 @@ def impulse(pars):
     summ = np.array([0.0, 0.0, 0.0])
     for i in np.arange(N):
         summ = summ + pars[i].v
-    impt.write(np.array2strinvg(summ) + '\n')
+    impt.write(np.array2string(summ) + '\n')
         
         
 def poten_eng(pars):
@@ -175,10 +175,10 @@ def maxwell(pars):
         
         
 def average_way(pars):
-    summ = np.array([0.0, 0.0, 0.0])
+    summ = 0
     for i in np.arange(N):
-        summ = summ + (pars[i].way)
-    summ = np.linalg.norm(summ)/N
+        summ = summ + np.linalg.norm(pars[i].way)
+    summ = summ/N
     wayt.write(str(summ) + '\n')
     
 

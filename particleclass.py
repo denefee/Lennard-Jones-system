@@ -48,8 +48,8 @@ class Particle:
         # moves the particle for the first time 
         self.lc = np.copy(self.c)
         dradius = dt*(self.v) + 0.5*(self.a)*dt**2
-        self.way += dradius
-        self.c += dradius
+        self.way = self.way + dradius
+        self.c = self.c + dradius
         Particle.to_border(self.c)
         self.v += dt*(self.a)
      
@@ -58,8 +58,8 @@ class Particle:
         # moves the particle using the Verlet scheme
         mem = np.copy(self.c)
         dradius = self.c - self.lc + self.a*dt**2
-        self.way += dradius
-        self.c += dradius
+        self.way = self.way + dradius
+        self.c = self.c + dradius
         Particle.to_border(self.c)
         self.lc = mem
         self.v += self.a*dt
