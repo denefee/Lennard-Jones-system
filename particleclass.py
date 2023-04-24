@@ -34,19 +34,17 @@ class Particle:
     def vec_to_virtual_copy(partc, part1c):
         # returns a vector directed to a virtual copy of particle "part1"
         vecr = part1c - partc
-        p1copy = np.copy(part1c)
         for i in np.arange(3):
             if (vecr[i] > half):
-                p1copy[i] -= Leng
+                vecr[i] -= Leng
             if (vecr[i] < -half):
-                p1copy[i] += Leng
-        vecr = p1copy - partc
+                vecr[i] += Leng
         return vecr
         
         
     def first_move(self):
         # moves the particle for the first time 
-        self.lc = np.copy(self.c)
+        self.lc = self.c
         dradius = dt*(self.v) + 0.5*(self.a)*dt**2
         self.way = self.way + dradius
         self.c = self.c + dradius
@@ -56,10 +54,9 @@ class Particle:
      
     def move(self):
         # moves the particle using the Verlet scheme
-        mem = np.copy(self.c)
         dradius = self.c - self.lc + self.a*dt**2
+        self.lc = self.c
         self.way = self.way + dradius
         self.c = self.c + dradius
         Particle.to_border(self.c)
-        self.lc = mem
         self.v += self.a*dt

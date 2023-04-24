@@ -22,29 +22,6 @@ maxwt = open('maxw.txt', 'w')
 wayt = open('way.txt', 'w')
         
 
-def rand_gen_char(pars):
-    # generates a particle with a unique coordinate
-    n = 0
-    c = np.random.uniform(0, Leng, (3))
-    for i in np.arange(pars.size):
-        a = pars[i]
-        if (np.linalg.norm(c - a.c) <= d): # may work, but needs a test
-            c = np.random.uniform(0, Leng, (3))
-            i = -1
-            continue
-    v = np.random.uniform(-Vmax, Vmax, (3))
-    n += 1
-    print (n)
-    return Particle(c, v)
-  
-  
-def rand_gen(pars):
-    # generates N particles with unique coordinates
-    for i in np.arange(N):
-        pars.append(rand_gen_char(pars))
-        continue
-
-
 def cell_gen(pars):
     # cell generation
     n = 0
