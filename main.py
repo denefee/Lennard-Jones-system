@@ -5,7 +5,7 @@ import time
 from particleclass import Particle
 
 # глобальные переменные
-N = int(64) # количество частиц
+N = int(216) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 d = float(0.0) # delta-окрестность
 dt = float(0.001) # тик
@@ -25,37 +25,38 @@ wayt = open('way.txt', 'w')
 def cell_gen(pars):
     # cell generation
     n = 0
-    key = True
-    flag = True
-    reb = math.ceil(np.cbrt(N))
-    dl = Leng/reb 
-    dlhalf = dl/2
-    zero = False
+    is_even_particle = True
+    is_full = False
+    edge = math.ceil(np.cbrt(N))
+    dl = Leng/edge 
+    dl_half = dl/2
+    need_zero = False
     if (N%2 == 1):
-        zero = True
-    for i in np.arange(reb):
-        if (flag == False):
+        need_zero = True
+    for i in np.arange(edge):
+        if is_full:
             break
-        x = dlhalf + i*dl
-        for j in np.arange(reb):
-            if (flag == False):
+        x = dl_half + i*dl
+        for j in np.arange(edge):
+            if is_full:
                 break
-            y = dlhalf + j*dl
-            for k in np.arange(reb):
-                z = dlhalf + k*dl
+            y = dl_half + j*dl
+            for k in np.arange(edge):
+                z = dl_half + k*dl
                 n += 1
                 c = np.array([x, y, z])
-                if key == True:
+                if is_even_particle:
                     v = np.random.uniform(-Vmax, Vmax, (3))
-                    key = False
+                    is_even_particle = False
                 else:
                     v = -v
-                    key = True
-                if ((n == N)and(zero == True)):
+                    is_even_particle = True
+                
+                if ((n == N)and(need_zero)):
                     v = np.array([0.0, 0.0, 0.0])
                 pars.append(Particle(c, v))
                 if (n == N):
-                    flag = False
+                    is_full = True
                     break
                 
                 
@@ -70,14 +71,14 @@ def axel(part, part1):
     part1.a = part1.a + ac
   
   
-def calc_ax(pars):
+def calc_axel(pars):
     # calculates the accelerations of all particles and changes them
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
             axel(pars[i], pars[j])
         
         
-def null_ax(pars):
+def null_axel(pars):
     # nullifies all accelerations
     for i in np.arange(N):
         pars[i].a = np.array([0, 0, 0]) 
@@ -85,7 +86,7 @@ def null_ax(pars):
     
 def first_move(pars):
     # moves all particles for the first time
-    calc_ax(pars)
+    calc_axel(pars)
     for i in np.arange(N):
         Particle.first_move(pars[i])
     
@@ -167,22 +168,22 @@ def timego(pars, tick):
     energy(pars)
     average_way(pars)
     # Particle.display(pars[N//2])
-    null_ax(pars)
+    null_axel(pars)
     for i in np.arange(1, tick):
-        calc_ax(pars)
+        calc_axel(pars)
         move(pars)
         # Particle.display(pars[N//2])
         impulse(pars)
         energy(pars)
         average_way(pars)
-        null_ax(pars)
+        null_axel(pars)
         if i%(tick//10) == 0:
             print (i)
     maxwell(pars)
 
 
 def main():  
-    t = int(10000) # ticks
+    t = int(1000) # ticks
     start = time.time() # точка отсчета времени
     pars = []
     cell_gen(pars) # генерация сеткой

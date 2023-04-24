@@ -1,6 +1,6 @@
 import numpy as np
 
-N = int(10000) # количество частиц
+N = int(216) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 d = float(0.0) # delta-окрестность
 dt = float(0.001) # тик
@@ -9,27 +9,25 @@ half = Leng/2 # половина длины коробки
 
 class Particle:
     """Particle class"""
-    def __init__(self, c, v, a = np.array([0, 0, 0]), lc = np.array([0, 0, 0]), way = np.array([0, 0, 0])):
+    def __init__(self, c, v, a = np.array([0, 0, 0]), 
+                 lc = np.array([0, 0, 0]), way = np.array([0, 0, 0])):
         self.c = c # coordinate
         self.v = v # velocity
         self.a = a # acceleration
         self.lc = lc # last coordinate
         self.way = way # the movement of a particle from the beginning of time
 
-
     def display(self):
         # displays information about the particle
         return print('Coordinate: ' + np.array2string(self.c) + 
         ', Velocity: ' + np.array2string(self.v) + 
-        ', Acceleration: ' + np.array2string(self.a))
-        
+        ', Acceleration: ' + np.array2string(self.a)) 
         
     def to_border(c):
         # returns the particle to the borders of the box
         for i in np.arange(3):
             while ((c[i] >= Leng)or(c[i] < 0)):
                 c[i] %= Leng
-         
                 
     def vec_to_virtual_copy(partc, part1c):
         # returns a vector directed to a virtual copy of particle "part1"
@@ -41,7 +39,6 @@ class Particle:
                 vecr[i] += Leng
         return vecr
         
-        
     def first_move(self):
         # moves the particle for the first time 
         self.lc = self.c
@@ -50,7 +47,6 @@ class Particle:
         self.c = self.c + dradius
         Particle.to_border(self.c)
         self.v += dt*(self.a)
-     
      
     def move(self):
         # moves the particle using the Verlet scheme
