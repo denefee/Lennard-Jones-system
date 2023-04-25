@@ -5,7 +5,7 @@ import time
 from particleclass import Particle
 
 # глобальные переменные
-N = int(2)  # количество частиц
+N = int(8)  # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 dt = float(0.001)  # тик
 Leng = int(10)  # длина коробки
@@ -21,7 +21,7 @@ maxwt = open('maxw.txt', 'w')
 wayt = open('way.txt', 'w')
 
 
-def cell_gen(pars):
+def cell_gen(particles):
     # cell generation
     n = 0
     particle_is_even = True
@@ -36,146 +36,141 @@ def cell_gen(pars):
                     v = np.random.uniform(-Vmax, Vmax, (3))
                     if (n == N-1):
                         v = np.zeros(3)
-                        pars.append(Particle(n, c, v))
+                        particles.append(Particle(n, c, v))
                         return 0
-                    pars.append(Particle(n, c, v))
+                    particles.append(Particle(n, c, v))
                     particle_is_even = False
                     n += 1
                 else:
-                    v = -v
-                    pars.append(Particle(n, c, v))
+                    particles.append(Particle(n, c, -v))
                     if (n == N-1):
                         return 0
                     particle_is_even = True
                     n += 1
 
 
+def null_axel(particles):
+    # nullifies all accelerations
+    for i in np.arange(N):
+        particles[i].a = np.zeros(3)
+
+
 def axel(part, part1):
     # calculates the forces of interaction between these particles
     # and changes their accelerations
-    vecr = Particle.vec_to_virtual_copy(part.c, part1.c)
-    modr = np.linalg.norm(vecr)
-    ac = 24*(2*np.power(modr, -14) - np.power(modr, -8))*vecr
+    vect_r = Particle.vec_to_virtual_copy(part.c, part1.c)
+    abs_r = np.linalg.norm(vect_r)
+    ac = 24*(2*np.power(abs_r, -14) - np.power(abs_r, -8))*vect_r
     part.a -= ac
     part1.a += ac
 
 
-def calc_axel(pars):
+def calc_axel(particles):
     # calculates the accelerations of all particles and changes them
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
-            axel(pars[i], pars[j])
+            axel(particles[i], particles[j])
 
 
-def null_axel(pars):
-    # nullifies all accelerations
-    for i in np.arange(N):
-        pars[i].a = np.zeros(3)
-
-
-def first_move(pars):
+def first_move(particles):
     # moves all particles for the first time
-    calc_axel(pars)
+    calc_axel(particles)
     for i in np.arange(N):
-        Particle.first_move(pars[i])
+        Particle.first_move(particles[i])
 
 
-def move(pars):
+def move(particles):
     # moves all particles
     for i in np.arange(N):
-        Particle.move(pars[i])
+        Particle.move(particles[i])
 
 
 def potentwo(part, part1):
     # calculates the potential energy of the interaction of two particles
-    vecr = Particle.vec_to_virtual_copy(part.c, part1.c)
-    modr = np.linalg.norm(vecr)
-    u = 4*(np.power(modr, -12) - np.power(modr, -6))
+    vect_r = Particle.vec_to_virtual_copy(part.c, part1.c)
+    abs_r = np.linalg.norm(vect_r)
+    u = 4*(np.power(abs_r, -12) - np.power(abs_r, -6))
     return u
 
 
-def impulse(pars):
+def impulse(particles):
     # calculates the total momentum of the system
     summ = np.zeros(3)
     for i in np.arange(N):
-        summ += pars[i].v
+        summ += particles[i].v
     impt.write(np.array2string(summ) + '\n')
 
 
-def poten_eng(pars):
+def poten_eng(particles):
     # calculates the potential energy of the interaction of all particles
     pot = 0.0
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
-            pot += potentwo(pars[i], pars[j])
+            pot += potentwo(particles[i], particles[j])
     pott.write(str(pot) + '\n')
     return pot
 
 
-def kinetic_eng(pars):
+def kinetic_eng(particles):
     # calculates the total kinetic energy of the system
     kin = 0.0
     for i in np.arange(N):
-        kin += (np.linalg.norm(pars[i].v)**2)/2
+        kin += (np.linalg.norm(particles[i].v)**2)/2
     kint.write(str(kin) + '\n')
     return kin
 
 
-def energy(pars):
+def energy(particles):
     # calculates the total mechanical energy of the system
-    pot = poten_eng(pars)
-    kin = kinetic_eng(pars)
+    pot = poten_eng(particles)
+    kin = kinetic_eng(particles)
     summ = pot + kin
     mect.write(str(summ) + '\n')
 
 
-def maxwell(pars):
+def maxwell(particles):
     list = np.zeros(N)
     for i in np.arange(N):
-        list[i] = np.linalg.norm(pars[i].v)
+        list[i] = np.linalg.norm(particles[i].v)
     list = np.sort(list)
     for i in np.arange(N):
         maxwt.write(str(list[i]) + '\n')
 
 
-def average_way(pars):
+def average_way(particles):
     summ = 0.0
     for i in np.arange(N):
-        summ += np.linalg.norm(pars[i].way)
+        summ += np.linalg.norm(particles[i].way)
     summ = summ/N
     wayt.write(str(summ) + '\n')
 
 
-def timego(pars, tick):
+def timego(particles, tick):
     # starts the simulation
     print(0)
-    first_move(pars)
-    impulse(pars)
-    energy(pars)
-    average_way(pars)
-    # Particle.display(pars[N//2])
-    null_axel(pars)
+    first_move(particles)
+    # impulse(particles)
+    energy(particles)
+    average_way(particles)
+    null_axel(particles)
     for i in np.arange(1, tick):
-        calc_axel(pars)
-        move(pars)
-        # Particle.display(pars[N//2])
-        impulse(pars)
-        energy(pars)
-        average_way(pars)
-        null_axel(pars)
+        calc_axel(particles)
+        move(particles)
+        # impulse(particles) commented out because momentum is maintained
+        energy(particles)
+        average_way(particles)
+        null_axel(particles)
         if i % (tick//10) == 0:
             print(i)
-    maxwell(pars)
+    maxwell(particles)
 
 
 def main():
-    t = int(100)  # ticks
+    t = int(100000)  # ticks
     start = time.time()  # точка отсчета времени
-    pars = []
-    cell_gen(pars)  # генерация сеткой  
-    # for i in np.arange(N): # выводит характеристики всех частиц
-    #    Particle.display(pars[i])
-    timego(pars, t)
+    particles = [] # particle spisok
+    cell_gen(particles)  # генерация сеткой  
+    timego(particles, t)
     end = time.time() - start  # собственно время работы программы
     print(end)  # вывод времени
 

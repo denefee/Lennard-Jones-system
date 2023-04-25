@@ -1,8 +1,5 @@
 import numpy as np
 
-N = int(2) # количество частиц
-Vmax = float(1.0)  # максимальная скорость частицы
-d = float(0.0) # delta-окрестность
 dt = float(0.001) # тик
 Leng = int(10) # длина коробки
 half = Leng/2 # половина длины коробки
@@ -31,28 +28,28 @@ class Particle:
                 
     def vec_to_virtual_copy(partc, part1c):
         # returns a vector directed to a virtual copy of particle "part1"
-        vecr = part1c - partc
+        vect_r = part1c - partc
         for i in np.arange(3):
-            if (vecr[i] > half):
-                vecr[i] -= Leng
-            if (vecr[i] < -half):
-                vecr[i] += Leng
-        return vecr
+            if (vect_r[i] > half):
+                vect_r[i] -= Leng
+            if (vect_r[i] < -half):
+                vect_r[i] += Leng
+        return vect_r
         
     def first_move(self):
         # moves the particle for the first time 
         self.lc = self.c
-        dradius = dt*(self.v) + 0.5*(self.a)*dt**2
-        self.way = self.way + dradius
-        self.c = self.c + dradius
+        delta_r = dt*(self.v) + 0.5*(self.a)*dt**2
+        self.way = self.way + delta_r
+        self.c = self.c + delta_r
         Particle.to_border(self.c)
         self.v += dt*(self.a)
      
     def move(self):
         # moves the particle using the Verlet scheme
-        dradius = self.c - self.lc + self.a*dt**2
+        delta_r = self.c - self.lc + self.a*dt**2
         self.lc = self.c
-        self.way = self.way + dradius
-        self.c = self.c + dradius
+        self.way = self.way + delta_r
+        self.c = self.c + delta_r
         Particle.to_border(self.c)
         self.v += self.a*dt
