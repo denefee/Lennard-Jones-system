@@ -1,6 +1,6 @@
 import numpy as np
 
-N = int(216) # количество частиц
+N = int(2) # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 d = float(0.0) # delta-окрестность
 dt = float(0.001) # тик
@@ -9,8 +9,7 @@ half = Leng/2 # половина длины коробки
 
 class Particle:
     """Particle class"""
-    def __init__(self, n, c, v, a = np.array([0, 0, 0]), 
-                 lc = np.array([0, 0, 0]), way = np.array([0, 0, 0])):
+    def __init__(self, n, c, v, a = np.zeros(3), lc = np.zeros(3), way = np.zeros(3)):
         self.n = n # particle number
         self.c = c # coordinate
         self.v = v # velocity
