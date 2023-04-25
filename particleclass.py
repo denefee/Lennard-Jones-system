@@ -9,8 +9,9 @@ half = Leng/2 # половина длины коробки
 
 class Particle:
     """Particle class"""
-    def __init__(self, c, v, a = np.array([0, 0, 0]), 
+    def __init__(self, n, c, v, a = np.array([0, 0, 0]), 
                  lc = np.array([0, 0, 0]), way = np.array([0, 0, 0])):
+        self.n = n # particle number
         self.c = c # coordinate
         self.v = v # velocity
         self.a = a # acceleration

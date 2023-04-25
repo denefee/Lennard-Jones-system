@@ -43,7 +43,6 @@ def cell_gen(pars):
             y = dl_half + j*dl
             for k in np.arange(edge):
                 z = dl_half + k*dl
-                n += 1
                 c = np.array([x, y, z])
                 if is_even_particle:
                     v = np.random.uniform(-Vmax, Vmax, (3))
@@ -52,10 +51,10 @@ def cell_gen(pars):
                     v = -v
                     is_even_particle = True
                 
-                if ((n == N)and(need_zero)):
+                if ((n == N-1)and(need_zero)):
                     v = np.array([0.0, 0.0, 0.0])
-                pars.append(Particle(c, v))
-                if (n == N):
+                pars.append(Particle(n, c, v))
+                if (n == N-1):
                     is_full = True
                     break
                 
