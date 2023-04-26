@@ -1,11 +1,12 @@
 import math
 import numpy as np
 import time
+import os
 
 from particleclass import Particle
 
 # глобальные переменные
-N = int(8)  # количество частиц
+N = int(64)  # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 dt = float(0.001)  # тик
 Leng = int(10)  # длина коробки
@@ -13,7 +14,7 @@ half = Leng/2  # половина длины коробки
 
 
 # opens files with data
-impt = open('imp.txt', 'w')
+# impt = open('imp.txt', 'w')
 kint = open('kin.txt', 'w')
 pott = open('pot.txt', 'w')
 mect = open('mec.txt', 'w')
@@ -94,12 +95,12 @@ def potentwo(part, part1):
     return u
 
 
-def impulse(particles):
+"""def impulse(particles):
     # calculates the total momentum of the system
     summ = np.zeros(3)
     for i in np.arange(N):
         summ += particles[i].v
-    impt.write(np.array2string(summ) + '\n')
+    impt.write(np.array2string(summ) + '\n')"""
 
 
 def poten_eng(particles):
@@ -185,7 +186,7 @@ def timego(particles, tick):
 
 
 def main():
-    t = int(10)  # ticks
+    t = int(2000)  # ticks
     start = time.time()  # точка отсчета времени
     particles = [] # particle spisok
     cell_gen(particles)  # генерация сеткой  
@@ -199,7 +200,7 @@ if __name__ == "__main__":
 
 
 # close files with data
-impt.close()
+# impt.close()
 kint.close()
 mect.close()
 pott.close()
