@@ -19,6 +19,7 @@ pott = open('pot.txt', 'w')
 mect = open('mec.txt', 'w')
 maxwt = open('maxw.txt', 'w')
 wayt = open('way.txt', 'w')
+coord = open('coord.txt', 'w')
 
 
 def cell_gen(particles):
@@ -143,12 +144,29 @@ def average_way(particles):
         summ += np.linalg.norm(particles[i].way)
     summ = summ/N
     wayt.write(str(summ) + '\n')
+    
+    
+def create_file_with_coordinates():
+    coord.write(str(N))
+    coord.write('\n')
+    coord.write('\n')
+    
+    
+def display_coordinates(particles):
+    for i in np.arange(N):
+        for j in np.arange(3):
+            coord.write(str(particles[i].c[j]) + ' ')
+        coord.write('\n')
+    coord.write('\n')
 
 
 def timego(particles, tick):
     # starts the simulation
+    create_file_with_coordinates()
+    display_coordinates(particles)
     print(0)
     first_move(particles)
+    display_coordinates(particles)
     # impulse(particles)
     energy(particles)
     average_way(particles)
@@ -156,6 +174,7 @@ def timego(particles, tick):
     for i in np.arange(1, tick):
         calc_axel(particles)
         move(particles)
+        display_coordinates(particles)
         # impulse(particles) commented out because momentum is maintained
         energy(particles)
         average_way(particles)
@@ -166,7 +185,7 @@ def timego(particles, tick):
 
 
 def main():
-    t = int(100000)  # ticks
+    t = int(10)  # ticks
     start = time.time()  # точка отсчета времени
     particles = [] # particle spisok
     cell_gen(particles)  # генерация сеткой  
@@ -186,3 +205,4 @@ mect.close()
 pott.close()
 maxwt.close()
 wayt.close()
+coord.close()

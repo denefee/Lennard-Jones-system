@@ -13,12 +13,6 @@ class Particle:
         self.a = a # acceleration
         self.lc = lc # last coordinate
         self.way = way # the movement of a particle from the beginning of time
-
-    def display(self):
-        # displays information about the particle
-        return print('Coordinate: ' + np.array2string(self.c) + 
-        ', Velocity: ' + np.array2string(self.v) + 
-        ', Acceleration: ' + np.array2string(self.a)) 
         
     def to_border(c):
         # returns the particle to the borders of the box
