@@ -6,7 +6,7 @@ import os
 from particleclass import Particle
 
 # глобальные переменные
-N = int(64)  # количество частиц
+N = int(343)  # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 dt = float(0.001)  # тик
 Leng = int(10)  # длина коробки
@@ -69,6 +69,7 @@ def axel(part, part1):
 
 def calc_axel(particles):
     # calculates the accelerations of all particles and changes them
+    null_axel(particles)
     for i in np.arange(N-1):
         for j in np.arange(i+1, N):
             axel(particles[i], particles[j])
@@ -145,44 +146,36 @@ def average_way(particles):
         summ += np.linalg.norm(particles[i].way)
     summ = summ/N
     wayt.write(str(summ) + '\n')
-    
-    
-def create_file_with_coordinates():
-    coord.write(str(N))
-    coord.write('\n')
-    coord.write('\n')
-    
+
     
 def display_coordinates(particles):
+    coord.write(str(N) + '\n')
+    coord.write('Lattice="10.0 0.0 0.0 0.0 10.0 0.0 0.0 0.0 10.0" Properties=S:1:pos:R:3' + '\n')
     for i in np.arange(N):
         for j in np.arange(3):
             coord.write(str(particles[i].c[j]) + ' ')
         coord.write('\n')
-    coord.write('\n')
 
 
 def timego(particles, tick):
     # starts the simulation
-    create_file_with_coordinates()
     display_coordinates(particles)
     print(0)
     first_move(particles)
     display_coordinates(particles)
     # impulse(particles)
-    energy(particles)
-    average_way(particles)
-    null_axel(particles)
+    # energy(particles)
+    # average_way(particles)
     for i in np.arange(1, tick):
         calc_axel(particles)
         move(particles)
         display_coordinates(particles)
         # impulse(particles) commented out because momentum is maintained
-        energy(particles)
-        average_way(particles)
-        null_axel(particles)
-        if i % (tick//10) == 0:
+        # energy(particles) commented out because energy is maintained
+        # average_way(particles)
+        if i % (tick//100) == 0:
             print(i)
-    maxwell(particles)
+    # maxwell(particles)
 
 
 def main():
