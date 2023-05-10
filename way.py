@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 x = np.array([])
-for i in np.arange(0, 100000):
+for i in np.arange(0, 1500):
     x = np.append(x, (i))
 
 y = np.array([])

@@ -19,7 +19,7 @@ class Particle:
         for i in np.arange(3):
             while ((c[i] >= Leng)or(c[i] < 0)):
                 c[i] %= Leng
-                
+             
     def vec_to_virtual_copy(partc, part1c):
         # returns a vector directed to a virtual copy of particle "part1"
         vect_r = part1c - partc
@@ -29,21 +29,21 @@ class Particle:
             if (vect_r[i] < -half):
                 vect_r[i] += Leng
         return vect_r
-        
+       
     def first_move(self):
         # moves the particle for the first time 
         self.lc = self.c
         delta_r = dt*(self.v) + 0.5*(self.a)*dt**2
-        self.way = self.way + delta_r
-        self.c = self.c + delta_r
+        self.way += delta_r
+        self.c += delta_r
         Particle.to_border(self.c)
         self.v += dt*(self.a)
-     
+    
     def move(self):
         # moves the particle using the Verlet scheme
         delta_r = self.c - self.lc + self.a*dt**2
         self.lc = self.c
-        self.way = self.way + delta_r
-        self.c = self.c + delta_r
+        self.way += delta_r
+        self.c += delta_r
         Particle.to_border(self.c)
         self.v += self.a*dt

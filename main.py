@@ -1,12 +1,11 @@
 import math
 import numpy as np
 import time
-import os
 
 from particleclass import Particle
 
 # глобальные переменные
-N = int(343)  # количество частиц
+N = int(216)  # количество частиц
 Vmax = float(1.0)  # максимальная скорость частицы
 dt = float(0.001)  # тик
 Leng = int(10)  # длина коробки
@@ -15,12 +14,12 @@ half = Leng/2  # половина длины коробки
 
 # opens files with data
 # impt = open('imp.txt', 'w')
-kint = open('kin.txt', 'w')
-pott = open('pot.txt', 'w')
-mect = open('mec.txt', 'w')
+# kint = open('kin.txt', 'w')
+# pott = open('pot.txt', 'w')
+# mect = open('mec.txt', 'w')
 maxwt = open('maxw.txt', 'w')
 wayt = open('way.txt', 'w')
-coord = open('coord.txt', 'w')
+# coord = open('coord.txt', 'w')
 
 
 def cell_gen(particles):
@@ -84,6 +83,7 @@ def first_move(particles):
 
 def move(particles):
     # moves all particles
+    calc_axel(particles)
     for i in np.arange(N):
         Particle.move(particles[i])
 
@@ -96,12 +96,12 @@ def potentwo(part, part1):
     return u
 
 
-"""def impulse(particles):
+def impulse(particles):
     # calculates the total momentum of the system
     summ = np.zeros(3)
     for i in np.arange(N):
         summ += particles[i].v
-    impt.write(np.array2string(summ) + '\n')"""
+    impt.write(np.array2string(summ) + '\n')
 
 
 def poten_eng(particles):
@@ -144,7 +144,7 @@ def average_way(particles):
     summ = 0.0
     for i in np.arange(N):
         summ += np.linalg.norm(particles[i].way)
-    summ = summ/N
+    summ = (summ)/N
     wayt.write(str(summ) + '\n')
 
     
@@ -159,27 +159,27 @@ def display_coordinates(particles):
 
 def timego(particles, tick):
     # starts the simulation
-    display_coordinates(particles)
-    print(0)
+    # display_coordinates(particles)
+    print(0, '%')
     first_move(particles)
-    display_coordinates(particles)
+    # display_coordinates(particles)
     # impulse(particles)
     # energy(particles)
-    # average_way(particles)
+    average_way(particles)
     for i in np.arange(1, tick):
-        calc_axel(particles)
         move(particles)
-        display_coordinates(particles)
+        # display_coordinates(particles)
         # impulse(particles) commented out because momentum is maintained
         # energy(particles) commented out because energy is maintained
-        # average_way(particles)
-        if i % (tick//100) == 0:
-            print(i)
-    # maxwell(particles)
+        average_way(particles)
+        if i % (tick//50) == 0:
+            print(i*100/tick, '%')
+    maxwell(particles)
+    print(100, '%')
 
 
 def main():
-    t = int(2000)  # ticks
+    t = int(1500)  # ticks
     start = time.time()  # точка отсчета времени
     particles = [] # particle spisok
     cell_gen(particles)  # генерация сеткой  
@@ -194,9 +194,9 @@ if __name__ == "__main__":
 
 # close files with data
 # impt.close()
-kint.close()
-mect.close()
-pott.close()
+# kint.close()
+# mect.close()
+# pott.close()
 maxwt.close()
 wayt.close()
-coord.close()
+# coord.close()
