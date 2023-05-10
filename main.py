@@ -14,9 +14,9 @@ half = Leng/2  # половина длины коробки
 
 # opens files with data
 # impt = open('imp.txt', 'w')
-# kint = open('kin.txt', 'w')
-# pott = open('pot.txt', 'w')
-# mect = open('mec.txt', 'w')
+kint = open('kin.txt', 'w')
+pott = open('pot.txt', 'w')
+mect = open('mec.txt', 'w')
 maxwt = open('maxw.txt', 'w')
 wayt = open('way.txt', 'w')
 # coord = open('coord.txt', 'w')
@@ -131,10 +131,10 @@ def energy(particles):
     mect.write(str(summ) + '\n')
 
 
-def maxwell(particles):
+def maxwellx(particles):
     list = np.zeros(N)
     for i in np.arange(N):
-        list[i] = np.linalg.norm(particles[i].v)
+        list[i] = np.linalg.norm(particles[i].v[0])
     list = np.sort(list)
     for i in np.arange(N):
         maxwt.write(str(list[i]) + '\n')
@@ -143,8 +143,8 @@ def maxwell(particles):
 def average_way(particles):
     summ = 0.0
     for i in np.arange(N):
-        summ += np.linalg.norm(particles[i].way)
-    summ = (summ)/N
+        summ += np.linalg.norm(particles[i].way)**2
+    summ = summ/N
     wayt.write(str(summ) + '\n')
 
     
@@ -164,22 +164,22 @@ def timego(particles, tick):
     first_move(particles)
     # display_coordinates(particles)
     # impulse(particles)
-    # energy(particles)
+    energy(particles)
     average_way(particles)
     for i in np.arange(1, tick):
         move(particles)
         # display_coordinates(particles)
         # impulse(particles) commented out because momentum is maintained
-        # energy(particles) commented out because energy is maintained
+        energy(particles) #commented out because energy is maintained
         average_way(particles)
-        if i % (tick//50) == 0:
+        if i % (tick//20) == 0:
             print(i*100/tick, '%')
-    maxwell(particles)
+    maxwellx(particles)
     print(100, '%')
 
 
 def main():
-    t = int(1500)  # ticks
+    t = int(1000)  # ticks
     start = time.time()  # точка отсчета времени
     particles = [] # particle spisok
     cell_gen(particles)  # генерация сеткой  
@@ -194,9 +194,9 @@ if __name__ == "__main__":
 
 # close files with data
 # impt.close()
-# kint.close()
-# mect.close()
-# pott.close()
+kint.close()
+mect.close()
+pott.close()
 maxwt.close()
 wayt.close()
 # coord.close()

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 x = np.array([])
-for i in np.arange(100000):
+for i in np.arange(20000):
     x = np.append(x, (i))
 
 ymec = np.array([])
