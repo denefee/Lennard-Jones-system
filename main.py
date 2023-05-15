@@ -6,9 +6,9 @@ from particleclass import Particle
 
 # глобальные переменные
 N = int(216)  # количество частиц
-Vmax = float(1.0)  # максимальная скорость частицы
+Vmax = float(2.0)  # максимальная скорость частицы
 dt = float(0.001)  # тик
-Leng = int(10)  # длина коробки
+Leng = int(8)  # длина коробки
 half = Leng/2  # половина длины коробки
 
 
@@ -37,13 +37,13 @@ def cell_gen(particles):
                     v = np.random.uniform(-Vmax, Vmax, (3))
                     if (n == N-1):
                         v = np.zeros(3)
-                        particles.append(Particle(n, c, v))
+                        particles.append(Particle(c, v))
                         return 0
-                    particles.append(Particle(n, c, v))
+                    particles.append(Particle(c, v))
                     particle_is_even = False
                     n += 1
                 else:
-                    particles.append(Particle(n, c, -v))
+                    particles.append(Particle(c, -v))
                     if (n == N-1):
                         return 0
                     particle_is_even = True
@@ -134,7 +134,7 @@ def energy(particles):
 def maxwellx(particles):
     list = np.zeros(N)
     for i in np.arange(N):
-        list[i] = np.linalg.norm(particles[i].v[0])
+        list[i] = np.linalg.norm(particles[i].v[0])**2
     list = np.sort(list)
     for i in np.arange(N):
         maxwt.write(str(list[i]) + '\n')
@@ -143,7 +143,7 @@ def maxwellx(particles):
 def average_way(particles):
     summ = 0.0
     for i in np.arange(N):
-        summ += np.linalg.norm(particles[i].way)**2
+        summ += (particles[i].way[0])**2
     summ = summ/N
     wayt.write(str(summ) + '\n')
 
@@ -158,19 +158,19 @@ def display_coordinates(particles):
 
 
 def timego(particles, tick):
-    # starts the simulation
+    "starts the simulation"
     # display_coordinates(particles)
     print(0, '%')
     first_move(particles)
     # display_coordinates(particles)
     # impulse(particles)
-    energy(particles)
+    # energy(particles)
     average_way(particles)
     for i in np.arange(1, tick):
         move(particles)
         # display_coordinates(particles)
         # impulse(particles) commented out because momentum is maintained
-        energy(particles) #commented out because energy is maintained
+        # energy(particles) commented out because energy is maintained
         average_way(particles)
         if i % (tick//20) == 0:
             print(i*100/tick, '%')
@@ -179,9 +179,9 @@ def timego(particles, tick):
 
 
 def main():
-    t = int(1000)  # ticks
+    t = int(4000)  # ticks
     start = time.time()  # точка отсчета времени
-    particles = [] # particle spisok
+    particles = [] # particle array
     cell_gen(particles)  # генерация сеткой  
     timego(particles, t)
     end = time.time() - start  # собственно время работы программы

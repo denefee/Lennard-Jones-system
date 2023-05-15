@@ -1,13 +1,12 @@
 import numpy as np
 
 dt = float(0.001) # тик
-Leng = int(10) # длина коробки
+Leng = int(8) # длина коробки
 half = Leng/2 # половина длины коробки
 
 class Particle:
     """Particle class"""
-    def __init__(self, n, c, v, a = np.zeros(3), lc = np.zeros(3), way = np.zeros(3)):
-        self.n = n # particle number
+    def __init__(self, c = np.zeros(3), v = np.zeros(3), a = np.zeros(3), lc = np.zeros(3), way = np.zeros(3)):
         self.c = c # coordinate
         self.v = v # velocity
         self.a = a # acceleration
@@ -32,7 +31,7 @@ class Particle:
        
     def first_move(self):
         # moves the particle for the first time 
-        self.lc = self.c
+        self.lc = np.zeros(3) + self.c
         delta_r = dt*(self.v) + 0.5*(self.a)*dt**2
         self.way += delta_r
         self.c += delta_r
@@ -42,7 +41,7 @@ class Particle:
     def move(self):
         # moves the particle using the Verlet scheme
         delta_r = self.c - self.lc + self.a*dt**2
-        self.lc = self.c
+        self.lc = np.zeros(3) + self.c
         self.way += delta_r
         self.c += delta_r
         Particle.to_border(self.c)

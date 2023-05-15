@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 x = np.array([])
-for i in np.arange(2000):
+for i in np.arange(1, 4001):
     x = np.append(x, (i))
 
 y = np.array([])
 f = open('way.txt')
 for line in f:
-    y = np.append(y, ((float(line))))
+    y = np.append(y, (float(line)))
 f.close()
 
 plt.xlabel(r'Время работы программы, тиков', fontsize=14)
