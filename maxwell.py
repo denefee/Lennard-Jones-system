@@ -11,10 +11,14 @@ for line in f:
     y = np.append(y, (float(line)))
 f.close()
 
-#plt.xlabel(r'Время работы программы, тиков', fontsize=14)
-#plt.ylabel(r'Механическая энергия', fontsize=14)
+v_x = y
+N = len(v_x)
+
+T = np.sum(v_x**2)
+plt.hist(v_x, bins=N//5, density=True)
+
+print(T/N)
+
 plt.title(r'Распределение проекции скоростей частиц на ось X', fontsize=14)
-plt.hist(y, bins=10, edgecolor='black', density = True) 
-#plt.grid(True)
 
 plt.show()

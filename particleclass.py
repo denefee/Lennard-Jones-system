@@ -40,7 +40,7 @@ class Particle:
     
     def move(self):
         # moves the particle using the Verlet scheme
-        delta_r = self.c - self.lc + self.a*dt**2
+        delta_r = Particle.vec_to_virtual_copy(self.lc, self.c) + self.a*dt**2
         self.lc = np.zeros(3) + self.c
         self.way += delta_r
         self.c += delta_r

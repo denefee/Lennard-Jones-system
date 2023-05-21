@@ -6,7 +6,7 @@ from particleclass import Particle
 
 # глобальные переменные
 N = int(216)  # количество частиц
-Vmax = float(2.0)  # максимальная скорость частицы
+Vmax = float(5.0)  # максимальная скорость частицы
 dt = float(0.001)  # тик
 Leng = int(8)  # длина коробки
 half = Leng/2  # половина длины коробки
@@ -134,7 +134,7 @@ def energy(particles):
 def maxwellx(particles):
     list = np.zeros(N)
     for i in np.arange(N):
-        list[i] = np.linalg.norm(particles[i].v[0])**2
+        list[i] = particles[i].v[0]
     list = np.sort(list)
     for i in np.arange(N):
         maxwt.write(str(list[i]) + '\n')
@@ -143,7 +143,7 @@ def maxwellx(particles):
 def average_way(particles):
     summ = 0.0
     for i in np.arange(N):
-        summ += (particles[i].way[0])**2
+        summ += (np.linalg.norm(particles[i].way))**2
     summ = summ/N
     wayt.write(str(summ) + '\n')
 
@@ -179,7 +179,7 @@ def timego(particles, tick):
 
 
 def main():
-    t = int(4000)  # ticks
+    t = int(5000)  # ticks
     start = time.time()  # точка отсчета времени
     particles = [] # particle array
     cell_gen(particles)  # генерация сеткой  
