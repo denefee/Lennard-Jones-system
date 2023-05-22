@@ -5,10 +5,10 @@ import time
 from particleclass import Particle
 
 # глобальные переменные
-N = int(216)  # количество частиц
-Vmax = float(5.0)  # максимальная скорость частицы
+N = int(64)  # количество частиц
+Vmax = float(20.0)  # максимальная скорость частицы
 dt = float(0.001)  # тик
-Leng = int(8)  # длина коробки
+Leng = int(4)  # длина коробки
 half = Leng/2  # половина длины коробки
 
 
@@ -179,7 +179,7 @@ def timego(particles, tick):
 
 
 def main():
-    t = int(5000)  # ticks
+    t = int(50000)  # ticks
     start = time.time()  # точка отсчета времени
     particles = [] # particle array
     cell_gen(particles)  # генерация сеткой  

@@ -1,7 +1,7 @@
 import numpy as np
 
 dt = float(0.001) # тик
-Leng = int(8) # длина коробки
+Leng = int(4) # длина коробки
 half = Leng/2 # половина длины коробки
 
 class Particle:

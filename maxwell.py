@@ -15,7 +15,7 @@ v_x = y
 N = len(v_x)
 
 T = np.sum(v_x**2)
-plt.hist(v_x, bins=N//5, density=True)
+plt.hist(v_x, bins=N//3, density=True)
 
 print(T/N)
 
